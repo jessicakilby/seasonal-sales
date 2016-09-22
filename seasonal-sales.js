@@ -1,68 +1,47 @@
-function executeIfXHRFails () {
-  console.log("An error occurred while transferring");
-}
 
-function executeWhenChunksArrive () {
-}
-
-function executeAfterFileLoaded () {
+function executeProducts () {
 
   var data = JSON.parse(this.responseText);
-  console.log("this.responseText:", this.responseText);
+  // console.log("this.responseText:", this.responseText);
   console.log("data", data);
 
-  var contentEl = document.getElementById("container")
-  var categoriesData = "";
-  // var productsData = "";
-  var currentCategories;
-  // var currentProducts;
-
-
-  for (var i = 0; i < data.categories.length; i++) {
-    currentCategories = data.categories[i];
-
-    categoriesData += "<div class='categories-block'>";
-      categoriesData += `<h1>${currentCategories.id}</h1>`;
-      categoriesData += "<div class='name'>Category: ";
-        categoriesData += currentCategories.name;
-      categoriesData += "</div>";
-      categoriesData += "<div class='season_discount'>Season: ";
-        categoriesData += currentCategories.season_discount;
-      categoriesData += "</div>";
-      categoriesData += "<div class='discount'>Discount: $";
-        categoriesData += currentCategories.discount;
-      categoriesData += "</div>";
-    categoriesData += "</div>";
-  };
+  var productEl = document.getElementById("outputContainer");
+  var currentProd;
   
-  // for (var i = 0; i < data.products.length; i++) {
-  //   currentProducts = data.products[i];
+  for (var i = 0; i < data.products.length; i++) {
+    currentProd = data.products[i];
 
-  //   productsData += "<div class='products-block'>";
-  //     productsData += `<h1>${currentProducts.id}</h1>`;
-  //     productsData += "<div class='name'>Product: ";
-  //       productsData += currentProducts.name;
-  //     productsData += "</div>";
-  //     productsData += "<div class='price'>Season: ";
-  //       productsData += currentProducts.price;
-  //     productsData += "</div>";
-  //     productsData += "<div class='category_id'>Discount Group: #";
-  //       productsData += currentProducts.category_id;
-  //     productsData += "</div>";
-  //   productsData += "</div>";
-  // };
-
-  console.log(categoriesData);
-  // console.log(productsData);
-  contentEl.innerHTML = categoriesData;
+    var productsData = `<h1>${currentProd.id}</h1>`;
+    productsData += `<div class='name'>Product: ${currentProd.name}</div>`;
+    productsData += `<div class='price'>Price: ${currentProd.price}</div>`;
+    productsData += `<div class='category_id'>Discount Group: #${currentProd.category_id}</div>`;
+    productsData += `</div>`;
+    productEl.innerHTML += `<div class='products-block row container col-xs-6 col-sm-4'>${productsData}</div>`;
+  };
 }
 
+function executeCategories () {
+  var data = JSON.parse(this.responseText);
+  var categoriesEl = document.getElementById("selectionArea");
+  var categoriesData = "";
+  var crntCat;
+
+  for (var i = 0; i < data.categories.length; i++) {
+    crntCat = data.categories[i];
+
+    categoriesData += `<option>${crntCat.season_discount}</option>`;
+  };
+    categoriesEl.innerHTML += `<select class='select'>${categoriesData}</select>`;
+
+}
+
+
 var myRequest = new XMLHttpRequest();
-
-myRequest.addEventListener("load", executeAfterFileLoaded);
-myRequest.addEventListener("error", executeIfXHRFails);
-myRequest.addEventListener("progress", executeWhenChunksArrive);
+myRequest.addEventListener("load", executeProducts);
 myRequest.open("GET", "products.json");
-myRequest.open("GET", "categories.json");
+myRequest.send();
 
+var myRequest = new XMLHttpRequest();
+myRequest.addEventListener("load", executeCategories);
+myRequest.open("GET", "categories.json");
 myRequest.send();
